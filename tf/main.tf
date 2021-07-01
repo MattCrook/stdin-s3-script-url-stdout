@@ -55,51 +55,34 @@ resource "aws_dynamodb_table" "terraform_locks" {
     }
 }
 
-# Provides an IAM role
+
+# 1. execution role  - execution_role_arn
+# 2. Bucket policy - to allow execution_role_arn to be able to read any file under the bucket you created
+# 3. knock-write IAM role with read/write access to the foo/* prefix in the created bucket
+# 4. knock-script IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it.
+
+# Provides an IAM role, allows anyone assuming the execution_role to read files n s3 bucket throught the attched managed policy.
 resource "aws_iam_role" "execution_role" {
   name               = "execution_role"
-  assume_role_policy = "${data.aws_iam_policy_document.s3_assumption.json}"
+  assume_role_policy = "${data.aws_iam_policy_document.s3_read_only_policy.json}"
+  # managed_policy_arns = [aws_iam_policy.s3_read_policy.arn]
 }
 
 
-# IAM policy that allows read-only access to the S3 bucket.
-resource "aws_iam_policy" "s3_permissions" {
-    name   = "${var.policy_name_prefix}S3ReadOnly"
-    policy = "${data.aws_iam_policy_document.s3_read_only_policy.json}"
+# Bucket policy to allow execution_role_arn to be able to read any file under the bucket you created.
+resource "aws_s3_bucket_policy" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+  policy = "${data.aws_iam_policy_document.s3_assumption.json}"
 }
 
-
-resource "aws_iam_policy_attachment" "s3_policy_attachment" {
-  name       = "s3-policy-attachment"
-  roles      = [aws_iam_role.execution_role.name]
-  policy_arn = aws_iam_policy.s3_permissions.arn
+# knock-write IAM role with read/write access to the foo/* prefix in the created bucket
+resource "aws_iam_role" "knock_s3_read_write" {
+  name               = "knock_s3_read_write"
+  assume_role_policy = "${data.aws_iam_policy_document.s3_read_write_policy.json}"
 }
 
-
-
-# Provides an IAM role inline policy. To allow execution_role to read everything in s3 bucket.
-// resource "aws_iam_role_policy" "s3_policy" {
-//   role   = aws_iam_role.execution_role.id
-//   policy = data.aws_iam_policy_document.s3_read_only_policy.json
-// }
-
-// resource "aws_s3_bucket_policy" "bucket" {
-//   bucket = aws_s3_bucket.bucket.id
-//   policy = "${data.aws_iam_policy_document.s3_read_only_policy.json}"
-// }
-
-// resource "aws_iam_user_policy_attachment" "attachment" {
-//   user       = aws_iam_user.new_user.name
-//   policy_arn = aws_iam_role_policy.s3_permissions.arn
-// }
-
-// resource "aws_iam_user" "knock_iam_user" {
-//   count = length(var.user_names)
-//   name  = var.user_names[count.index]
-// }
-
-
-// resource "aws_iam_user_policy_attachment" "s3_read_only_attachment" {
-//   user       = aws_iam_user.example_iam[0].name
-//   policy_arn = aws_iam_policy.s3_read_only_policy.arn
-// }
+# knock-script IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it.
+resource "aws_iam_role" "knock_script" {
+  name               = "knock_script"
+  assume_role_policy = "${data.aws_iam_policy_document.script_execution_assumption.json}"
+}
