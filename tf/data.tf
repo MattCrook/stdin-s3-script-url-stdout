@@ -1,6 +1,6 @@
 data "aws_iam_policy_document" "s3_read_only_policy" {
   statement {
-    sid       = "AmazonS3ReadOnlyAccess",
+    sid       = "AmazonS3ReadOnlyAccess"
     effect    = "Allow"
     actions   = ["s3:Get*", "s3:List*"]
     resources = [aws_s3_bucket.bucket.arn]
@@ -9,14 +9,14 @@ data "aws_iam_policy_document" "s3_read_only_policy" {
 
 data "aws_iam_policy_document" "s3_read_write_policy" {
   statement {
-    sid       = "ListObjectsInBucket",
+    sid       = "ListObjectsInBucket"
     effect    = "Allow"
     actions   = ["s3:List*"]
     resources = [aws_s3_bucket.bucket.arn]
   }
 
   statement {
-    sid       = "AllObjectActions",
+    sid       = "AllObjectActions"
     effect    = "Allow"
     actions   = ["s3:*Object*"]
     resources = [aws_s3_bucket.bucket.arn]

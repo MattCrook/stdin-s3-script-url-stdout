@@ -12,16 +12,6 @@ output "dynamodb_table_name" {
     description = "The name of the DynamoDB table."
 }
 
-// output "brave_arn" {
-//     value       = aws_iam_user.example_iam[0].arn
-//     description = "The ARN for user Matt"
-// }
-
-// output "all_arns" {
-//      value       = aws_iam_user.example_iam[*].arn
-//      description = "The ARNs for all iam users"
-//  }
-
 output "s3_read_only_policy_permissions" {
   value = data.aws_iam_policy_document.s3_read_only_policy.json
 }
@@ -30,7 +20,16 @@ output "s3_assumption" {
   value = data.aws_iam_policy_document.s3_assumption.json
 }
 
+output "s3_read_write_policy" {
+  value = data.aws_iam_policy_document.s3_read_write_policy.json
+}
+
 output "execution_role_arn" {
   description = "IAM role that is allowed to execute the script and read any file fromt the S3 bucket."
   value       = aws_iam_role.execution_role.arn
+}
+
+output "execution_role_name" {
+  description = "IAM name of the role that is allowed to execute the script and read any file fromt the S3 bucket."
+  value       = aws_iam_role.execution_role.name
 }
