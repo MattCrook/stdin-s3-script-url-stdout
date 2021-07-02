@@ -69,18 +69,6 @@ resource "aws_iam_role" "execution_role" {
   managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
 }
 
-
-# Bucket policy to allow execution_role_arn to be able to read any file under the bucket you created.
-resource "aws_s3_bucket_policy" "bucket" {
-  bucket = aws_s3_bucket.bucket.id
-  policy = "${data.aws_iam_policy_document.s3_assumption.json}"
-}
-
-resource "aws_iam_role_policy" "bucket_read_only_perm" {
-  role   = aws_iam_role.execution_role.id
-  policy = data.aws_iam_policy_document.s3_read_only_policy.json
-}
-
 # knock-write IAM role with read/write access to the foo/* prefix in the created bucket
 resource "aws_iam_role" "knock_s3_read_write_perm" {
   name               = "knock_s3_read_write"
@@ -88,13 +76,42 @@ resource "aws_iam_role" "knock_s3_read_write_perm" {
   managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
 }
 
-resource "aws_iam_role_policy" "bucket_read_write_perm" {
-  role   = aws_iam_role.knock_s3_read_write_perm.id
-  policy = data.aws_iam_policy_document.s3_read_write_policy.json
+# knock-script IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it.
+resource "aws_iam_role" "knock_script" {
+  name               = "knock_script"
+  assume_role_policy = data.aws_iam_policy_document.script_execution_assumption.json
 }
 
-# knock-script IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it.
-// resource "aws_iam_role" "knock_script" {
-//   name               = "knock_script"
-//   assume_role_policy = data.aws_iam_policy_document.script_execution_assumption.json
+
+
+// Create Bucket policy? 
+// Create Iam policy first
+// use the data source to be able to read any file
+// the policy is then the policy in the aws_s3_bucket_policy
+// attach the policy?
+
+
+
+
+
+
+
+
+
+# Bucket policy to allow execution_role_arn to be able to read any file under the bucket you created.
+# S3 bucket policies specify what actions are allowed or denied for which principals on the bucket that the bucket policy is attached to
+// resource "aws_s3_bucket_policy" "bucket" {
+//   bucket = aws_s3_bucket.bucket.id
+//   policy = "${data.aws_iam_policy_document.s3_read_only_policy.json}"
+// }
+
+// resource "aws_iam_role_policy" "bucket_read_only_perm" {
+//   role   = aws_iam_role.execution_role.id
+//   policy = "${data.aws_iam_policy_document.s3_read_only_policy.json}"
+// }
+
+
+// resource "aws_iam_role_policy" "bucket_read_write_perm" {
+//   role   = aws_iam_role.knock_s3_read_write_perm.id
+//   policy = data.aws_iam_policy_document.s3_read_write_policy.json
 // }

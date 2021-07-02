@@ -3,7 +3,7 @@ data "aws_iam_policy_document" "s3_read_only_policy" {
     sid       = "AmazonS3ReadOnlyAccess"
     effect    = "Allow"
     actions   = ["s3:Get*", "s3:List*"]
-    resources = [aws_s3_bucket.bucket.arn]
+    resources = [aws_iam_role.execution_role.arn]
   }
 }
 
@@ -23,12 +23,13 @@ data "aws_iam_policy_document" "s3_read_write_policy" {
   }
 }
 
+
 data "aws_iam_policy_document" "s3_assumption" {
   statement {
-    actions = ["sts:AssumeRole"]
+    actions   = ["sts:AssumeRole"]
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["s3.amazonaws.com"]
     }
   }
@@ -39,7 +40,7 @@ data "aws_iam_policy_document" "script_execution_assumption" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [aws_iam_role.execution_role.arn]
     }
   }
