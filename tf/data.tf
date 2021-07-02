@@ -28,8 +28,8 @@ data "aws_iam_policy_document" "s3_assumption" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "AWS"
-      identifiers = [aws_iam_role.execution_role.arn]
+      type = "Service"
+      identifiers = ["s3.amazonaws.com"]
     }
   }
 }

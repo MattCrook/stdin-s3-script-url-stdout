@@ -61,11 +61,12 @@ resource "aws_dynamodb_table" "terraform_locks" {
 # 3. knock-write IAM role with read/write access to the foo/* prefix in the created bucket
 # 4. knock-script IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it.
 
-# Provides an IAM role, allows anyone assuming the execution_role to read files n s3 bucket throught the attched managed policy.
+# Provides an IAM role, allows anyone assuming the execution_role to read files in s3 bucket throught the attched managed policy.
 resource "aws_iam_role" "execution_role" {
-  name               = "execution_role"
-  assume_role_policy = "${data.aws_iam_policy_document.s3_read_only_policy.json}"
-  # managed_policy_arns = [aws_iam_policy.s3_read_policy.arn]
+  name                = "execution_role"
+  description         = "Allows S3 to call AWS services on your behalf"
+  assume_role_policy  = data.aws_iam_policy_document.s3_assumption.json
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
 }
 
 
@@ -75,14 +76,25 @@ resource "aws_s3_bucket_policy" "bucket" {
   policy = "${data.aws_iam_policy_document.s3_assumption.json}"
 }
 
+resource "aws_iam_role_policy" "bucket_read_only_perm" {
+  role   = aws_iam_role.execution_role.id
+  policy = data.aws_iam_policy_document.s3_read_only_policy.json
+}
+
 # knock-write IAM role with read/write access to the foo/* prefix in the created bucket
-resource "aws_iam_role" "knock_s3_read_write" {
+resource "aws_iam_role" "knock_s3_read_write_perm" {
   name               = "knock_s3_read_write"
-  assume_role_policy = "${data.aws_iam_policy_document.s3_read_write_policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.s3_assumption.json
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+}
+
+resource "aws_iam_role_policy" "bucket_read_write_perm" {
+  role   = aws_iam_role.knock_s3_read_write_perm.id
+  policy = data.aws_iam_policy_document.s3_read_write_policy.json
 }
 
 # knock-script IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it.
-resource "aws_iam_role" "knock_script" {
-  name               = "knock_script"
-  assume_role_policy = "${data.aws_iam_policy_document.script_execution_assumption.json}"
-}
+// resource "aws_iam_role" "knock_script" {
+//   name               = "knock_script"
+//   assume_role_policy = data.aws_iam_policy_document.script_execution_assumption.json
+// }
