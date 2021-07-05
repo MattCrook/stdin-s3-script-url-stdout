@@ -18,8 +18,9 @@ terraform {
 }
 
 resource "aws_s3_bucket" "bucket" {
-    bucket = var.bucket_name
-    acl    = "private"
+    bucket  = var.bucket_name
+    acl     = "private"
+    region  = "us-east-1"
 
     # prevent accidental deletion of this bucket, so terraform destroy wil exit in an error.
     // lifecycle {
