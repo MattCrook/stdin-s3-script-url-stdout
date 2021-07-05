@@ -103,7 +103,6 @@ resource "aws_iam_policy" "knock_script" {
   policy      = "${data.aws_iam_policy_document.script_execution_perm.json}"
 }
 
-
 resource "aws_iam_role_policy_attachment" "s3_read" {
   role       = aws_iam_role.execution_role.name
   policy_arn = aws_iam_policy.s3_read.arn
@@ -118,50 +117,3 @@ resource "aws_iam_role_policy_attachment" "knock_script" {
   role       = aws_iam_role.knock_script.name
   policy_arn = aws_iam_policy.knock_script.arn
 }
-
-
-
-
-
-
-// Create Bucket policy? 
-// Create Iam policy first
-// use the data source to be able to read any file
-// the policy is then the policy in the aws_s3_bucket_policy
-// attach the policy?
-
-
-# Bucket policy to allow execution_role_arn to be able to read any file under the bucket you created.
-# S3 bucket policies specify what actions are allowed or denied for which principals on the bucket that the bucket policy is attached to
-// resource "aws_s3_bucket_policy" "bucket" {
-//   bucket = aws_s3_bucket.bucket.id
-//   policy = <<POLICY
-// {
-//   "Version": "2012-10-17",
-//   "Statement": [
-//     {
-//       "Effect": "Allow",
-//       "Principal": {
-//         "AWS": "${aws_iam_role.execution_role.arn}"
-//       },
-//       "Action": [
-//         "s3:ListBucket",
-//         "s3:GetObject"
-//         ],
-//       "Resource": "arn:aws:s3:::knock-devops-challenge-bucket"
-//     }
-//   ]
-// }
-// POLICY
-// }
-
-// resource "aws_iam_role_policy" "bucket_read_only_perm" {
-//   role   = aws_iam_role.execution_role.id
-//   policy = "${data.aws_iam_policy_document.s3_read_only_policy.json}"
-// }
-
-
-// resource "aws_iam_role_policy" "bucket_read_write_perm" {
-//   role   = aws_iam_role.knock_s3_read_write_perm.id
-//   policy = data.aws_iam_policy_document.s3_read_write_policy.json
-// }
