@@ -19,6 +19,7 @@ test:
 	go run presigned_url.go -b knock-devops-challenge-bucket -k tf/tfstate/terraform.tfstate -r arn:aws:iam::067352809764:role/knock_script
 
 
+#make get_presigned_url bucket=knock-devops-challenge-bucket key=tf/tfstate/terraform.tfstate iam_role=arn:aws:iam::067352809764:role/knock_script
 #arn:aws:iam::067352809764:role/knock_s3_read_write
 # export AWS_ACCESS_KEY_ID=ASIAQ7LUKKESOE27B7O7
 # export AWS_SECRET_ACCESS_KEY=kvTEXY4On05ajczGO8U4zWp9oQPmiRm/LNtpGMyH

@@ -1,6 +1,5 @@
 package main
 
-// snippet-start:[s3.go.generate_presigned_url.imports]
 import (
 	"flag"
 	"fmt"
@@ -13,7 +12,6 @@ import (
 
 
 func GetPresignedURL(sess *session.Session, bucket, key, iam_role *string) (string, error) {
-    // snippet-start:[s3.go.generate_presigned_url.call]
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1")},
     )
@@ -25,7 +23,6 @@ func GetPresignedURL(sess *session.Session, bucket, key, iam_role *string) (stri
     })
 
     urlStr, err := req.Presign(15 * time.Minute)
-    // snippet-end:[s3.go.generate_presigned_url.call]
     if err != nil {
         return "", err
     }
@@ -34,7 +31,6 @@ func GetPresignedURL(sess *session.Session, bucket, key, iam_role *string) (stri
 }
 
 func main() {
-    // snippet-start:[s3.go.generate_presigned_url.args]
     bucket := flag.String("b", "", "The bucket")
     key := flag.String("k", "", "The object key")
 	iam_role := flag.String("r", "", "The IAM role to execute the script with")
@@ -44,14 +40,10 @@ func main() {
         fmt.Println("You must supply a bucket name (-b BUCKET) and object key (-k KEY) and the iam role to execute the script (-r ROLE)")
         return
     }
-    // snippet-end:[s3.go.generate_presigned_url.args]
 
-    // snippet-start:[s3.go.generate_presigned_url.session]
     sess := session.Must(session.NewSessionWithOptions(session.Options{
         SharedConfigState: session.SharedConfigEnable,
 	}))
-
-    // snippet-end:[s3.go.generate_presigned_url.session]
 
     urlStr, err := GetPresignedURL(sess, bucket, key, iam_role)
     if err != nil {
@@ -60,10 +52,5 @@ func main() {
         return
     }
 
-	//get_policy()
-
-    // snippet-start:[s3.go.generate_presigned_url.print]
     fmt.Println("The presigned URL: " + urlStr + " is valid for 15 minutes")
-    // snippet-end:[s3.go.generate_presigned_url.print]
 }
-// snippet-end:[s3.go.generate_presigned_url]

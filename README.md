@@ -11,18 +11,33 @@ This project is an example of a script that reads from stdin a list of S3 keys w
 * `cd knock-devops-challenge`
 
 **Set up Infrastructure**
+Cd into the `tf` directory.
+
 * `terraform init`
 * `terraform plan`
 * `terraform apply`
-* ***Optional***
-  * Provision infrastructure with remote backend.
+* ***Step 2***
+  * Provision infrastructure with remote backend. This will put the State file in the S3 bucket, which we will use later.
   * After running the above, uncomment the terraform backend block in `main.tf` and run `terraform init` and `terraform apply` again.
 
+**Running the Scripts**
 
-go mod tidy
-go run s3_download.go
+Cd back out into root directory.
 
-go get -u github.com/aws/aws-sdk-go/...
+* `make prep`
+* Run the Make target that runs the `Go` script passing in the specified arguments:
+  * `make get_presigned_url`
+  * Example:
+    * `make get_presigned_url bucket=knock-devops-challenge-bucket key=tf/tfstate/terraform.tfstate iam_role=arn:aws:iam::067352809764:role/knock_script`
+
+
+
+
+
+
+
+
+
 
 Create AWS Access Keys
 https://console.aws.amazon.com/iam/home?#/home
