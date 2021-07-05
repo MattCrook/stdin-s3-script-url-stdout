@@ -12,21 +12,21 @@ output "dynamodb_table_name" {
     description = "The name of the DynamoDB table."
 }
 
-output "s3_read_only_policy_permissions" {
-  value = data.aws_iam_policy_document.s3_read_only_policy.json
-}
+// output "read_only_policy_permissions" {
+//   value = data.aws_iam_policy_document.read_only_policy.json
+// }
 
-output "s3_assumption" {
-  value = data.aws_iam_policy_document.s3_assumption.json
-}
+// output "s3_assumption" {
+//   value = data.aws_iam_policy_document.s3_assumption.json
+// }
 
-output "s3_read_write_policy" {
-  value = data.aws_iam_policy_document.s3_read_write_policy.json
-}
+// output "s3_read_write_policy" {
+//   value = data.aws_iam_policy_document.s3_read_write_policy.json
+// }
 
-output "script_execution_assumption" {
-  value = data.aws_iam_policy_document.script_execution_assumption.json
-}
+// output "script_execution_assumption" {
+//   value = data.aws_iam_policy_document.script_execution_assumption.json
+// }
 
 output "execution_role_arn" {
   description = "IAM role that is allowed to execute the script and read any file fromt the S3 bucket."
@@ -38,7 +38,20 @@ output "execution_role_name" {
   value       = aws_iam_role.execution_role.name
 }
 
-// output "knock_s3_read_write_perm_arn" {
-//   description = "IAM role that is allowed to perform read/write to s3 bucket"
-//   value       = aws_iam_role.knock_s3_read_write_perm.arn
-// }
+output "knock_s3_read_write_perm_arn" {
+  description = "IAM role that is allowed to perform read/write to s3 bucket"
+  value       = aws_iam_role.knock_s3_read_write_perm.arn
+}
+
+output "knock_script_arn" {
+  description = "IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it"
+  value       = aws_iam_role.knock_script.arn
+}
+
+output "caller_arn" {
+  value = data.aws_caller_identity.current.arn
+}
+
+output "caller_user" {
+  value = data.aws_caller_identity.current.user_id
+}

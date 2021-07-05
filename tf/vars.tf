@@ -10,15 +10,19 @@ variable "table_name" {
   default     = "knock-devops-challenge-locks"
 }
 
-
-// variable "user_names" {
-//   description = "Create IAM users with these names"
-//   type        = list(string)
-//   default     = ["Matt", "Bob"]
-// }
-
 variable "policy_name_prefix" {
   description = "The prefix to use for the IAM policy names"
   type        = string
   default     = "ExecuteRole"
+}
+
+variable "s3_key" {
+  description = "The path to the state file in s3"
+  type        = string
+  default     = "tf/tfstate/terraform.tfstate"
+}
+
+variable "region" {
+  type        = string
+  default     = "us-east-1"
 }

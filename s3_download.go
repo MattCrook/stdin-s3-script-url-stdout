@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -101,66 +99,6 @@ func bucket_acl(bucket_name string) {
 }
 
 
-func bucket_policy(bucket_name string) {
-    // if len(os.Args) != 2 {
-    //     exitErrorf("bucket name required\nUsage: %s bucket_name",
-    //         filepath.Base(os.Args[0]))
-    // }
-
-    bucket := bucket_name
-
-    // Initialize a session in us-west-2 that the SDK will use to load
-    // credentials from the shared credentials file ~/.aws/credentials.
-    sess, err := session.NewSession(&aws.Config{
-        Region: aws.String("us-east-1")},
-    )
-
-    if err != nil {
-        // Special error handling for the when the bucket doesn't
-        // exists so we can give a more direct error message from the CLI.
-        if aerr, ok := err.(awserr.Error); ok {
-            switch aerr.Code() {
-            case s3.ErrCodeNoSuchBucket:
-                exitErrorf("Bucket %q does not exist.", bucket)
-            case "NoSuchBucketPolicy":
-                exitErrorf("Bucket %q does not have a policy.", bucket)
-            }
-        }
-        exitErrorf("Unable to get bucket %q policy, %v.", bucket, err)
-    }
-
-    // Create S3 service client
-    svc := s3.New(sess)
-
-    // Call S3 to retrieve the policy for the selected bucket.
-    result, err := svc.GetBucketPolicy(&s3.GetBucketPolicyInput{
-        Bucket: aws.String(bucket),
-    })
-    if err != nil {
-        // Special error handling for the when the bucket doesn't
-        // exists so we can give a more direct error message from the CLI.
-        if aerr, ok := err.(awserr.Error); ok {
-            switch aerr.Code() {
-            case s3.ErrCodeNoSuchBucket:
-                exitErrorf("Bucket %q does not exist.", bucket)
-            case "NoSuchBucketPolicy":
-                exitErrorf("Bucket %q does not have a policy.", bucket)
-            }
-        }
-        exitErrorf("Unable to get bucket %q policy, %v.", bucket, err)
-    }
-
-    out := bytes.Buffer{}
-    policyStr := aws.StringValue(result.Policy)
-    if err := json.Indent(&out, []byte(policyStr), "", "  "); err != nil {
-        exitErrorf("Failed to pretty print bucket policy, %v.", err)
-    }
-
-    fmt.Printf("%q's Bucket Policy:\n", bucket)
-    fmt.Println(out.String())
-}
-
-
 // Downloads an item from an S3 Bucket
 //
 // Usage:
@@ -174,17 +112,14 @@ func main() {
 
     // Create S3 service client
     svc := s3.New(sess)
-
     bucket_name := buckets()
-    fmt.Println("BUCKETS", buckets())
-
+    //fmt.Println("BUCKETS", bucket_name)
 
     bucket_acl(bucket_name[0])
-    bucket_policy(bucket_name[0])
 
     req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
-        Bucket: aws.String("myBucket"),
-        Key:    aws.String("myKey"),
+        Bucket: aws.String(bucket_name[0]),
+        Key:    aws.String("tf/tfstate/terraform.tfstate"),
     })
     urlStr, err := req.Presign(15 * time.Minute)
 

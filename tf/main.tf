@@ -7,15 +7,15 @@ provider "aws" {
 }
 
 
-// terraform {
-//     backend "s3" {
-//         bucket         = "knock-devops-challenge-bucket"
-//         key            = "tf/terraform.tfstate"
-//         region         = "us-east-2"
-//         dynamodb_table = "knock-devops-challenge-locks"
-//         encrypt        = true
-//     }
-// }
+terraform {
+    backend "s3" {
+        bucket         = "knock-devops-challenge-bucket"
+        key            = "tf/tfstate/terraform.tfstate"
+        region         = "us-east-1"
+        dynamodb_table = "knock-devops-challenge-locks"
+        encrypt        = true
+    }
+}
 
 resource "aws_s3_bucket" "bucket" {
     bucket = var.bucket_name
@@ -66,14 +66,15 @@ resource "aws_iam_role" "execution_role" {
   name                = "execution_role"
   description         = "Allows S3 to call AWS services on your behalf"
   assume_role_policy  = data.aws_iam_policy_document.s3_assumption.json
-  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
+  # managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
 }
 
 # knock-write IAM role with read/write access to the foo/* prefix in the created bucket
 resource "aws_iam_role" "knock_s3_read_write_perm" {
   name               = "knock_s3_read_write"
+  description        = "Allows read/write access to the foo/* prefix in the created bucket"
   assume_role_policy = data.aws_iam_policy_document.s3_assumption.json
-  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
+  # managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
 }
 
 # knock-script IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it.
@@ -81,6 +82,45 @@ resource "aws_iam_role" "knock_script" {
   name               = "knock_script"
   assume_role_policy = data.aws_iam_policy_document.script_execution_assumption.json
 }
+
+
+# Allows execution_role_arn to be able to read any file under the S3 bucket created.
+resource "aws_iam_policy" "s3_read" {
+  name        = "${aws_s3_bucket.bucket.bucket}-s3-read"
+  description = "Allows read access to specifed S3 bucket."
+  policy      = "${data.aws_iam_policy_document.read_only_policy.json}"
+}
+
+resource "aws_iam_policy" "s3_read_write" {
+  name        = "${aws_s3_bucket.bucket.bucket}-s3-read-write-access"
+  description = "Allows read/write access to specifed S3 bucket."
+  policy      = "${data.aws_iam_policy_document.s3_read_write_policy.json}"
+}
+
+resource "aws_iam_policy" "knock_script" {
+  name        = "${aws_s3_bucket.bucket.bucket}-s3-script-access"
+  description = "Allows permissions to be able to run the script and that allows execution_role_arn role to assume it"
+  policy      = "${data.aws_iam_policy_document.script_execution_perm.json}"
+}
+
+
+resource "aws_iam_role_policy_attachment" "s3_read" {
+  role       = aws_iam_role.execution_role.name
+  policy_arn = aws_iam_policy.s3_read.arn
+}
+
+resource "aws_iam_role_policy_attachment" "s3_read_write" {
+  role       = aws_iam_role.knock_s3_read_write_perm.name
+  policy_arn = aws_iam_policy.s3_read_write.arn
+}
+
+resource "aws_iam_role_policy_attachment" "knock_script" {
+  role       = aws_iam_role.knock_script.name
+  policy_arn = aws_iam_policy.knock_script.arn
+}
+
+
+
 
 
 
@@ -91,18 +131,28 @@ resource "aws_iam_role" "knock_script" {
 // attach the policy?
 
 
-
-
-
-
-
-
-
 # Bucket policy to allow execution_role_arn to be able to read any file under the bucket you created.
 # S3 bucket policies specify what actions are allowed or denied for which principals on the bucket that the bucket policy is attached to
 // resource "aws_s3_bucket_policy" "bucket" {
 //   bucket = aws_s3_bucket.bucket.id
-//   policy = "${data.aws_iam_policy_document.s3_read_only_policy.json}"
+//   policy = <<POLICY
+// {
+//   "Version": "2012-10-17",
+//   "Statement": [
+//     {
+//       "Effect": "Allow",
+//       "Principal": {
+//         "AWS": "${aws_iam_role.execution_role.arn}"
+//       },
+//       "Action": [
+//         "s3:ListBucket",
+//         "s3:GetObject"
+//         ],
+//       "Resource": "arn:aws:s3:::knock-devops-challenge-bucket"
+//     }
+//   ]
+// }
+// POLICY
 // }
 
 // resource "aws_iam_role_policy" "bucket_read_only_perm" {
