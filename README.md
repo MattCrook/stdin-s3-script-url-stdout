@@ -31,34 +31,14 @@ Cd back out into root directory.
     * `make get_presigned_url bucket=knock-devops-challenge-bucket key=tf/tfstate/terraform.tfstate iam_role=arn:aws:iam::067352809764:role/knock_script`
 
 
+#### To Assume the execute script Role
 
+* `make assume_role`
+* Then export the Global variables:
+  * `export AWS_ACCESS_KEY_ID=RoleAccessKeyID`
+  * `export AWS_SECRET_ACCESS_KEY=RoleSecretKey`
+  * `export AWS_SESSION_TOKEN=RoleSessionToken`
+* `aws sts get-caller-identity` - should now be the arn of `knock_script`.
 
-
-
-
-
-
-
-Create AWS Access Keys
-https://console.aws.amazon.com/iam/home?#/home
-
-* On the navigation menu, choose Users.
-* Choose your IAM user name (not the check box).
-* Open the Security credentials tab, and then choose Create access key.
-* To download the key pair, choose Download .csv file. Store the keys
-
-
-
-execution_role
-    s3_assumption
-        s3_read (policy)
-            read_only_policy (read only on resource s3_bucket)
-
-
-
-knock_s3_read_write_perm
-
-
-
-
-knock_script
+**Return to IAM user**
+* `unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN`

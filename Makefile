@@ -12,7 +12,7 @@ get_presigned_url:
 	@go run presigned_url.go -b $(bucket) -k $(key) -r $(iam_role)
 
 assume_role:
-	aws sts assume-role --role-arn "arn:aws:iam::067352809764:role/knock_s3_read_write" --role-session-name AWSCLI-Session
+	aws sts assume-role --role-arn "arn:aws:iam::067352809764:role/knock_script" --role-session-name AWSCLI-Session
 
 
 test:
