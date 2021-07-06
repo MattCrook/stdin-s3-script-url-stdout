@@ -7,18 +7,15 @@ provider "aws" {
 }
 
 
-terraform {
-    backend "s3" {
-        bucket         = "knock-devops-challenge-bucket"
-        key            = "tf/tfstate/terraform.tfstate"
-        region         = "us-east-1"
-        dynamodb_table = "knock-devops-challenge-locks"
-        encrypt        = true
-    }
-}
-
-
-
+// terraform {
+//     backend "s3" {
+//         bucket         = "knock-devops-challenge-bucket"
+//         key            = "tf/tfstate/terraform.tfstate"
+//         region         = "us-east-1"
+//         dynamodb_table = "knock-devops-challenge-locks"
+//         encrypt        = true
+//     }
+// }
 
 resource "aws_s3_bucket" "bucket" {
     bucket  = var.bucket_name
