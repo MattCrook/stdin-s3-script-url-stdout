@@ -29,6 +29,8 @@ Cd back out into root directory.
   * `make get_presigned_url`
   * Example:
     * `make get_presigned_url bucket=knock-devops-challenge-bucket key=tf/tfstate/terraform.tfstate iam_role=arn:aws:iam::067352809764:role/knock_script`
+    * Or can run the script directly, passing the appropriate flags:
+      * `go run presigned_url.go -b knock-devops-challenge-bucket -k tf/tfstate/terraform.tfstate -r arn:aws:iam::067352809764:role/knock_script`
 
 
 #### To Assume the execute script Role

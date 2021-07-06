@@ -11,11 +11,8 @@ import (
 )
 
 
-func GetPresignedURL(sess *session.Session, bucket, key, source_profile *string) (string, error) {
+func GetPresignedURL(sess *session.Session, bucket, key, role *string) (string, error) {
 	svc := s3.New(sess)
-
-    fmt.Println("P---", creds)
-
 
     req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
         Bucket: bucket,
@@ -33,36 +30,23 @@ func GetPresignedURL(sess *session.Session, bucket, key, source_profile *string)
 func main() {
     bucket := flag.String("b", "", "The bucket")
     key := flag.String("k", "", "The object key")
-	// iam_role := flag.String("r", "", "The IAM role to execute the script with")
-    source_profile := flag.String("r", "", "The name IAM role to execute the script with")
+    role := flag.String("r", "", "The name IAM role to execute the script with")
     flag.Parse()
 
-    if *bucket == "" || *key == "" || *source_profile == ""{
+    if *bucket == "" || *key == "" || *role == ""{
         fmt.Println("You must supply a bucket name (-b BUCKET) and object key (-k KEY) and the iam role to execute the script (-r ROLE)")
         return
     }
 
-    // creds := credentials.NewEnvCredentials()
-
-    // // Retrieve the credentials value
-    // credValue, err := creds.Get()
-    // if err != nil {
-    //     fmt.Println("Got an error getting the credentials:")
-    //     fmt.Println(err)
-    //     return
-    // }
-
-    // fmt.Println(credValue)
-
     sess := session.Must(session.NewSessionWithOptions(session.Options{
         SharedConfigState: session.SharedConfigEnable,
-        Profile: *source_profile,
+        //Profile: *source_profile,
         Config: aws.Config{
             Region: aws.String("us-east-1"),
         },
 	}))
 
-    urlStr, err := GetPresignedURL(sess, bucket, key, source_profile)
+    urlStr, err := GetPresignedURL(sess, bucket, key, role)
     if err != nil {
         fmt.Println("Got an error retrieving a presigned URL:")
         fmt.Println(err)
