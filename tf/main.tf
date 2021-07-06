@@ -7,27 +7,29 @@ provider "aws" {
 }
 
 
-// terraform {
-//     backend "s3" {
-//         bucket         = "knock-devops-challenge-bucket"
-//         key            = "tf/tfstate/terraform.tfstate"
-//         region         = "us-east-1"
-//         dynamodb_table = "knock-devops-challenge-locks"
-//         encrypt        = true
-//     }
-// }
+terraform {
+    backend "s3" {
+        bucket         = "knock-devops-challenge-bucket"
+        key            = "tf/tfstate/terraform.tfstate"
+        region         = "us-east-1"
+        dynamodb_table = "knock-devops-challenge-locks"
+        encrypt        = true
+    }
+}
+
+
+
 
 resource "aws_s3_bucket" "bucket" {
     bucket  = var.bucket_name
     acl     = "private"
+    # policy  =
 
-
-    # prevent accidental deletion of this bucket, so terraform destroy wil exit in an error.
     // lifecycle {
     //     prevent_destroy = true
     // }
 
-    # This is only here so we can destroy the bucket as part of automated tests. You should not copy this for production usage.
+    # This is only here so we can destroy the bucket as part of this project and testing purposes.
     force_destroy = true
 
     versioning {
@@ -42,6 +44,47 @@ resource "aws_s3_bucket" "bucket" {
             }
         }
     }
+
+    tags = {
+        Name    = "knock-devops-challenge-bucket-dev"
+        env     = "Dev"
+        Vendor  = "Amazon"
+    }
+}
+
+
+// resource "aws_s3_bucket_policy" "knock_bucket" {
+//   bucket  = aws_s3_bucket.bucket.id
+//   policy = <<POLICY
+//   {
+//     "Version": "2012-10-17",
+//     "Statement": [
+//       {
+//         "Effect": "Allow",
+//         "Principal": {
+//           "AWS": "arn:aws:iam::067352809764:role/knock_script"
+//         },
+//         "Action": [
+//           "s3:ListBucket",
+//           "s3:GetObject",
+//           "s3:GetBucketAcl",
+//           "s3:GetAccessPoint",
+//           "s3:GetAccessPointPolicy"
+//           ],
+//         "Resource": "arn:aws:s3:::knock-devops-challenge-bucket"
+//       }
+//     ]
+//   }
+
+//   POLICY
+// }
+
+resource "aws_s3_bucket_public_access_block" "knock_bucket" {
+  bucket                  = aws_s3_bucket.bucket.bucket
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 # Dynamodb table for state locking
@@ -70,7 +113,7 @@ resource "aws_iam_role" "execution_role" {
   # managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
 }
 
-# knock-write IAM role with read/write access to the foo/* prefix in the created bucket
+
 resource "aws_iam_role" "knock_s3_read_write_perm" {
   name               = "knock_s3_read_write"
   description        = "Allows read/write access to the foo/* prefix in the created bucket"
@@ -78,9 +121,10 @@ resource "aws_iam_role" "knock_s3_read_write_perm" {
   # managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3FullAccess"]
 }
 
-# knock-script IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it.
+
 resource "aws_iam_role" "knock_script" {
   name               = "knock_script"
+  description        = "IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it."
   assume_role_policy = data.aws_iam_policy_document.script_execution_assumption.json
 }
 

@@ -14,9 +14,10 @@ get_presigned_url:
 assume_role:
 	aws sts assume-role --role-arn "arn:aws:iam::067352809764:role/knock_script" --role-session-name AWSCLI-Session
 
-
 test:
 	go run presigned_url.go -b knock-devops-challenge-bucket -k tf/tfstate/terraform.tfstate -r arn:aws:iam::067352809764:role/knock_script
+
+# test:go run presigned_url.go -b knock-devops-challenge-bucket -k tf/tfstate/terraform.tfstate -r arn:aws:iam::067352809764:role/knock_script
 
 
 #make get_presigned_url bucket=knock-devops-challenge-bucket key=tf/tfstate/terraform.tfstate iam_role=arn:aws:iam::067352809764:role/knock_script

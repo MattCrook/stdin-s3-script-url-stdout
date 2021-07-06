@@ -66,7 +66,20 @@ data "aws_iam_policy_document" "script_execution_perm" {
   statement {
     sid = "ScriptExecutionAccess"
     effect= "Allow"
-    actions = ["s3:Get*"]
-    resources = ["${data.aws_caller_identity.current.arn}"]
+    actions = [
+      "s3:GetObjectAcl",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:GetBucketVersioning",
+      "s3:GetBucketAcl",
+      "s3:GetAccessPointPolicy",
+      "s3:GetBucketPolicy",
+      "s3:GetObjectVersion"
+      ]
+    resources = [
+      "${aws_iam_role.knock_script.arn}",
+      "arn:aws:s3:us-east-1:067352809764:accesspoint/bucket",
+      "arn:aws:s3:::knock-devops-challenge-bucket/tf/tfstate/terraform.tfstate"
+      ]
   }
 }
