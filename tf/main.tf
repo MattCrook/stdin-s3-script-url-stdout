@@ -50,32 +50,6 @@ resource "aws_s3_bucket" "bucket" {
 }
 
 
-// resource "aws_s3_bucket_policy" "knock_bucket" {
-//   bucket  = aws_s3_bucket.bucket.id
-//   policy = <<POLICY
-//   {
-//     "Version": "2012-10-17",
-//     "Statement": [
-//       {
-//         "Effect": "Allow",
-//         "Principal": {
-//           "AWS": "arn:aws:iam::067352809764:role/knock_script"
-//         },
-//         "Action": [
-//           "s3:ListBucket",
-//           "s3:GetObject",
-//           "s3:GetBucketAcl",
-//           "s3:GetAccessPoint",
-//           "s3:GetAccessPointPolicy"
-//           ],
-//         "Resource": "arn:aws:s3:::knock-devops-challenge-bucket"
-//       }
-//     ]
-//   }
-
-//   POLICY
-// }
-
 resource "aws_s3_bucket_public_access_block" "knock_bucket" {
   bucket                  = aws_s3_bucket.bucket.bucket
   block_public_acls       = true

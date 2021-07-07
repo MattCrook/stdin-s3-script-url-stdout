@@ -2,11 +2,11 @@ prep:
 	@echo "Cleaning up unused dependencies and adding missing dependencies."
 	@go mod tidy
 
-run_script:
-	@go run s3_download.go
-
 list_execute_script_policies:
 	aws iam list-attached-role-policies --role-name knock_script
+
+list_role_policies:
+	aws iam list-attached-role-policies --role-name $(role_name)
 
 get_presigned_url:
 	@go run presigned_url.go -b $(bucket) -k $(key) -r $(role)
