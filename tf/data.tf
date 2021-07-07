@@ -10,7 +10,6 @@ data "aws_iam_policy_document" "s3_assumption" {
   }
 }
 
-
 data "aws_iam_policy_document" "read_only_policy" {
   statement {
     sid       = "S3ReadOnlyAccess"
@@ -55,12 +54,6 @@ data "aws_iam_policy_document" "script_execution_assumption" {
     }
   }
 }
-
-
-# user needs permission to riun the script from the cammand line. 
-# user.current?
-# take user in as paramenters in script
-# get the current user, make policy. attach policy to user
 
 data "aws_iam_policy_document" "script_execution_perm" {
   statement {
