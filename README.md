@@ -6,6 +6,8 @@ This project is an example of a script that reads from stdin an S3 Bucket, keys,
 
 ### Set Up Instructions
 
+*This project assumes you have an AWS account, and have configured your aws credentials, either as environment variables or in ~/.aws/credentials.*
+
 **Clone Repo**
 * `git clone git@github.com:MattCrook/stdin-s3-script-url-stdout.git`
 * `cd knock-devops-challenge`
