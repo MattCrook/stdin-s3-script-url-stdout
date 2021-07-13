@@ -1,13 +1,13 @@
 variable "bucket_name" {
   description = "The name of the S3 bucket. Must be globally unique."
   type        = string
-  default     = "knock-devops-challenge-bucket"
+  default     = "devops-challenge-bucket"
 }
 
 variable "table_name" {
   description = "The name of the DynamoDB table. Must be unique in this AWS account."
   type        = string
-  default     = "knock-devops-challenge-locks"
+  default     = "devops-challenge-locks"
 }
 
 variable "policy_name_prefix" {

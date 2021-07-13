@@ -22,14 +22,14 @@ output "execution_role_name" {
   value       = aws_iam_role.execution_role.name
 }
 
-output "knock_s3_read_write_perm_arn" {
+output "s3_read_write_perm_arn" {
   description = "IAM role that is allowed to perform read/write to s3 bucket"
-  value       = aws_iam_role.knock_s3_read_write_perm.arn
+  value       = aws_iam_role.s3_read_write_perm.arn
 }
 
-output "knock_script_arn" {
+output "script_arn" {
   description = "IAM role with permissions to be able to run the script and that allows execution_role_arn role to assume it"
-  value       = aws_iam_role.knock_script.arn
+  value       = aws_iam_role.script.arn
 }
 
 output "caller_arn" {

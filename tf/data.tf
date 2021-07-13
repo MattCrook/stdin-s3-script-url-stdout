@@ -70,9 +70,9 @@ data "aws_iam_policy_document" "script_execution_perm" {
       "s3:GetObjectVersion"
       ]
     resources = [
-      "${aws_iam_role.knock_script.arn}",
+      "${aws_iam_role.script.arn}",
       "arn:aws:s3:us-east-1:067352809764:accesspoint/bucket",
-      "arn:aws:s3:::knock-devops-challenge-bucket/tf/tfstate/terraform.tfstate"
+      "arn:aws:s3:::devops-challenge-bucket/tf/tfstate/terraform.tfstate"
       ]
   }
 }
