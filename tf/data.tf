@@ -10,6 +10,8 @@ data "aws_iam_policy_document" "s3_assumption" {
   }
 }
 
+# TRUST POLICY
+
 data "aws_iam_policy_document" "read_only_policy" {
   statement {
     sid       = "S3ReadOnlyAccess"
